@@ -101,3 +101,14 @@ app.put('/talker/:id',
 
     return res.status(200).json({ id: Number(id), name, age, talk });
 });
+
+app.delete('/talker/:id', tokenValidate, async (req, res) => {
+  const { id } = req.params;
+  const talkers = await fs.readFile(jsonTalken, 'utf8')
+      .then((talker) => JSON.parse(talker));
+
+  const deleteTalkerId = talkers.filter((element) => element.id !== Number(id));
+  await fs.writeFile(jsonTalken, JSON.stringify(deleteTalkerId));
+
+  return res.status(204).end();
+});
