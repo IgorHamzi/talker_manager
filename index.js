@@ -6,7 +6,15 @@ const crypto = require('crypto');
 const {
   emailValidate,
   passwordValidate,
+  nameValidate,
+  ageValidate,
+
 } = require('./validate/user');
+
+const tokenValidate = require('./validate/token');
+const talkValidate = require('./validate/talk');
+const rateValidate = require('./validate/rate');
+const watchedAtValidate = require('./validate/watchedAt');
 
 const app = express();
 app.use(bodyParser.json());
@@ -44,4 +52,28 @@ app.get('/talker/:id', async (req, res) => {
 app.post('/login', emailValidate, passwordValidate, (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   res.status(200).json({ token });
+});
+
+app.post('/talker',
+  tokenValidate,
+  nameValidate,
+  ageValidate,
+  talkValidate,
+  rateValidate,
+  watchedAtValidate,
+  async (req, res) => {
+    const { name, age, talk } = req.body;
+    const talkers = await fs.readFile('./talker.json', 'utf8')
+      .then((talker) => JSON.parse(talker));
+
+    const addTalker = {
+      id: talkers.length + 1,
+      name,
+      age,
+      talk,
+    };
+
+    await fs.writeFile('./talker.json', JSON.stringify([...talkers, addTalker]));
+
+    return res.status(201).json(addTalker);
 });

@@ -26,7 +26,35 @@ const passwordValidate = (req, res, next) => {
   next();
 };
 
+const nameValidate = (req, res, next) => { 
+  const { name } = req.body;
+  const status = 400;
+
+  if (!name) return res.status(status).json({ message: 'O campo "name" é obrigatório' });
+
+  if (name.length < 3) {
+    return res.status(status).json({ message: 'O "name" deve ter pelo menos 3 caracteres' });
+  }
+
+  next();
+};
+
+const ageValidate = (req, res, next) => {
+  const { age } = req.body;
+  const status = 400;
+
+  if (!age) return res.status(status).json({ message: 'O campo "age" é obrigatório' });
+
+  if (age < 18) {
+    return res.status(status).json({ message: 'A pessoa palestrante deve ser maior de idade' });
+  }
+
+  next();
+};
+
 module.exports = {
   emailValidate,
   passwordValidate,
+  nameValidate,
+  ageValidate,
 };
